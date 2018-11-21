@@ -1,3 +1,24 @@
 #!/usr/bin/env python
 
-print('sanity check')
+import subprocess
+from subprocess import PIPE
+
+def main():
+    ip_target = '192.168.200.{}'
+    ip_alive = []
+
+    for ip in range(1, 30):
+        results = subprocess.run(["fping", "-a", "-C 2", "-q", ip_target.format(ip)], stdout=PIPE, stderr=subprocess.STDOUT, encoding="utf-8")
+        if (results.returncode == 0):
+            ip_alive.append(results.args[4])
+
+            res_time = results.stdout.split(": ")[1].split("\n")[0]
+            print("Host: " + results.args[4] + " is detected online. Response time(s) were: " + res_time)
+       
+    print("The following hosts were found to be online and responding to ping requests:\n \nDetected Hosts:\n===============")
+    for ip in ip_alive:
+        print(ip)
+
+
+if __name__ == '__main__':
+    main()
